@@ -16,6 +16,7 @@ namespace CSharpToFSharp
             int ans3 = SomeMathShit.factorial3(6);
             int ans4 = SomeMathShit.factorial4(6);
 
+            Console.WriteLine("Testing F# factorial(6)!");
             Console.WriteLine("First F# factorial: " + ans1);
             Console.WriteLine("Second F# factorial: " + ans2);
             Console.WriteLine("Third F# factorial: " + ans3);
