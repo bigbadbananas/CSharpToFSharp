@@ -8,6 +8,7 @@ namespace DataContracts
 {
     /// <summary>
     /// Message object for communicating from F# to C#.
+    /// Based on music.
     /// </summary>
     public class FsToCsResultMessage
     {

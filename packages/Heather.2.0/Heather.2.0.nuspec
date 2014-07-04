@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Heather</id>
+    <version>2.0</version>
+    <title>F# Compiler Fork with Unicode Support</title>
+    <authors>Microsoft, F# Foundation and Aliens</authors>
+    <owners>Microsoft, F# Foundation and Aliens</owners>
+    <licenseUrl>https://github.com/fsharp/fsharp/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Heather/fsharp</projectUrl>
+    <iconUrl>http://i1001.photobucket.com/albums/af137/lokilokiv1/lambda10.jpg</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>F# 3.0 compiler fork with unicode letters support and some another changes.</description>
+    <summary>- Unicode Letters Support
+ - Optimized collections from https://github.com/jack-pappas/fs-core-optimized</summary>
+    <tags>F#</tags>
+  </metadata>
+</package>
