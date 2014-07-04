@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ClientUtils.FsharpLib;
+using DataContracts;
 
 namespace CSharpToFSharp
 {
@@ -21,6 +22,24 @@ namespace CSharpToFSharp
             Console.WriteLine("Second F# factorial: " + ans2);
             Console.WriteLine("Third F# factorial: " + ans3);
             Console.WriteLine("Fourth F# factorial: " + ans4);
+
+            Console.WriteLine("Pass in a code to parse:");
+            string input = Console.ReadLine();
+
+            var message = Parser.getMessage(input);
+
+            Console.WriteLine("Got a parsed message!");
+            Console.WriteLine(message.IsThisTheRealLife);
+            Console.WriteLine(message.IsThisJustFantasy);
+            Console.WriteLine(message.CaughtInALandSlide);
+            
+            foreach (var item in message.NoEscapeFromReality)
+            {
+                Console.Write(item + "\t");
+            }
+
+            Console.WriteLine();
+            Console.ReadLine();
         }
     }
 }

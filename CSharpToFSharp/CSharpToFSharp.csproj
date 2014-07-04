@@ -48,6 +48,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataContracts\DataContracts.csproj">
+      <Project>{21eca724-da65-422b-b780-ba42132ba647}</Project>
+      <Name>DataContracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FSharpTest\FSharpLib.fsproj">
       <Project>{0464158b-98b9-4667-9bc6-b2b881e852cd}</Project>
       <Name>FSharpLib</Name>
