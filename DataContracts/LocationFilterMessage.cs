@@ -14,7 +14,6 @@ namespace OdotTad.Tocs.Shared.DataContracts.Location
     [DataContract]
     public class LocationFilterMessage
     {
-
         public LocationFilterMessage()
         {
             DistrictIds = new List<string>();
