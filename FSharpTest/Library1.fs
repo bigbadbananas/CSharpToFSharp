@@ -1,6 +1,6 @@
 ﻿namespace ClientUtils.FsharpLib
 
-module SomeMathShit = 
+module SomeMath = 
     
     /// <summary>
     /// Naive factorial.
