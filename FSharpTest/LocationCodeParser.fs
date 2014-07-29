@@ -36,8 +36,8 @@ module LocationCodeParser =
 
         // Parses the district IDs out of the Location Code, placing them into
         // the filter.  Returns the mutated code and filter.
-        // String, LocationFilterMessage -> (String, LocationFilterMessage)
-        let parseDistricts code (filter: LocationFilterMessage) =
+        // (String, LocationFilterMessage) -> (String, LocationFilterMessage)
+        let parseDistricts (code, (filter: LocationFilterMessage)) =
             let mat = Regex.Match(code, LocationPatterns.districtIdsPattern)
             filter.DistrictIds <- mat.Groups.Item(LocationPatterns.DISTRICT_IDS_KEY)
                                             .ToString()
@@ -46,10 +46,10 @@ module LocationCodeParser =
                                             .ToList()
             (mat.Groups.Item(LocationPatterns.PREDECESSOR_GROUP_KEY).Value, filter)
 
-        // String, LocationFilterMessage -> (String, LocationFilterMessage)
+        // (String, LocationFilterMessage) -> (String, LocationFilterMessage)
         // Returns a location code with any lanes affected removed and
         // a mutated LocationFilterMessage with lanes assigned to it.
-        let parseLanes code (filter: LocationFilterMessage) =
+        let parseLanes (code, (filter: LocationFilterMessage)) =
             // String -> List<string>
             // Uses a single string representing a list of lanes
             // to make a list of lane designation strings.
@@ -79,11 +79,7 @@ module LocationCodeParser =
             // First trim districts and lanes from the location code
             // and assign the parsed values to the filter
             let trimmedCode, newFilter =
-                parseDistricts str filter
-                |> function
-                    | (one, two) -> parseDistricts one two
-                |> function
-                    | (one, two) -> parseLanes one two
+                (parseDistricts >> parseLanes) (str, filter)
             
             // Assign the trimmed location code
             newFilter.LocationCode <- trimmedCode
@@ -131,15 +127,15 @@ module LocationCodeParser =
 
 
         let parseMP code (filter: LocationFilterMessage) = 
-            let codeWithoutDists, filter = parseDistricts code filter
-            let codeForMPParse, filter = parseLanes codeWithoutDists filter
+            let newCode, newFilter = (parseDistricts >> parseLanes) (code, filter)
 
-            let mat = Regex.Match(codeForMPParse, LocationPatterns.begMPPattern)
-            let startMP = mat.Groups.Item(LocationPatterns.MILEPOINT_GROUP_KEY).Value
-            match startMP with
-            | NumericString mp -> filter.BeginMilepoint <- new Nullable<decimal>(mp)
-            | StartsWith "z" -> filter.IsZMilepoint <- true
-                                filter.BeginMilepoint, filter.EndMilepoint <- parseZMP startMP
+//            let mat = Regex.Match(codeForMPParse, LocationPatterns.begMPPattern)
+//            let startMP = mat.Groups.Item(LocationPatterns.MILEPOINT_GROUP_KEY).Value
+//            match startMP with
+//            | NumericString mp -> filter.BeginMilepoint <- new Nullable<decimal>(mp)
+//            | StartsWith "z" -> filter.IsZMilepoint <- true
+//                                
+//                                filter.BeginMilepoint, filter.EndMilepoint <- parseZMP startMP
 
             // TODO: lots more to go
             filter
@@ -152,7 +148,7 @@ module LocationCodeParser =
             match code with
             | Contains "/" () -> parseXFeature code filter
             | StartsWith "=" () -> parseLatLng code filter
-            | MatchesPattern LocationPatterns.begMPPattern mps -> parseMP mps filter
+            | MatchesPattern LocationPatterns.begMPPattern mps -> parseMP code filter
             | _ -> new LocationFilterMessage()
 
         let filter = new LocationFilterMessage()
