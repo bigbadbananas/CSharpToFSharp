@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace OdotTad.Tocs.Shared.DataContracts.Location
+namespace DataContracts
 {
     /// <summary>
     /// Represents the parameters of a location search.
@@ -20,7 +20,6 @@ namespace OdotTad.Tocs.Shared.DataContracts.Location
             LanesAffectedLeft = new List<string>();
             LanesAffectedRight = new List<string>();
             LanesAffectedUnknown = new List<string>();
-            LatLong = new Tuple<decimal?, decimal?>(null, null);
         }
 
         [DataMember]
@@ -30,7 +29,9 @@ namespace OdotTad.Tocs.Shared.DataContracts.Location
         /// Gets or sets a tuple representing the latitude and longitude respectively.
         /// </summary>
         [DataMember]
-        public Tuple<decimal?, decimal?> LatLong { get; set; }
+        public decimal? Latitude { get; set; }
+
+        public decimal? Longitude { get; set; }
 
         [DataMember]
         public string HighwayNumber { get; set; }
