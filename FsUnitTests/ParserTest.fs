@@ -21,7 +21,17 @@ type UnitTest() =
 
 
     [<TestMethod>]
-    member x.ParseLatLngWrongValueTest () = 
+    member x.ParseLatLngWrongLatTest () = 
+        let code = "=21,15"
+        let lat = new Nullable<decimal>(12m)
+        let lng = new Nullable<decimal>(15m)
+        let expected = new LocationFilterMessage(Latitude = lat, Longitude = lng)
+        let actual = parseLocationCode code false
+        Assert.AreNotEqual(expected.Latitude, actual.Latitude)
+        Assert.AreEqual(expected.Longitude, actual.Longitude)
+
+    [<TestMethod>]
+    member x.ParseLatLngWrongLngTest() = 
         let code = "=12,51"
         let lat = new Nullable<decimal>(12m)
         let lng = new Nullable<decimal>(15m)
