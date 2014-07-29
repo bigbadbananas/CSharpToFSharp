@@ -12,11 +12,7 @@ module LocationCodeParser =
     /// Entry point to the parser.  Ensures a non-null location code is what goes through parsing.
     /// </summary>
     /// <param name="code">The location code to parse</param>
-    /// <param name="allDistricts"></param>
-    /// <remarks>
-    /// Because of the nature of F# types, no null values can make it past this point.
-    /// </remarks>
-    let parseLocationCode (code: string, allDistricts: bool) = 
+    let parseLocationCode (code: string) (allDistricts: bool) = 
         // ===== Active patterns ============================
         let (|StartsWith|_|) needle (haystack: string) = 
             if haystack.StartsWith(needle) then Some()
@@ -37,6 +33,10 @@ module LocationCodeParser =
             if didParse then Some(value) else None
             
         // ===== Lanes and Districts ========================
+
+        // Parses the district IDs out of the Location Code, placing them into
+        // the filter.  Returns the mutated code and filter.
+        // String, LocationFilterMessage -> (String, LocationFilterMessage)
         let parseDistricts code (filter: LocationFilterMessage) =
             let mat = Regex.Match(code, LocationPatterns.districtIdsPattern)
             filter.DistrictIds <- mat.Groups.Item(LocationPatterns.DISTRICT_IDS_KEY)
@@ -121,15 +121,33 @@ module LocationCodeParser =
             filter
     
         // ===== Milepoint ==================================
-        let parseMP code (filter: LocationFilterMessage) = filter
+        let parseZMP (zmp: string) =
+            match zmp.Substring(1) with
+            | Contains "-" -> zmp.Split('-')
+                              |> function
+                                 | [|one; two;|] -> (numberOrDefault one, numberOrDefault two)
+                                 | _ -> (new Nullable<decimal>(), new Nullable<decimal>())
+            | _ ->  (new Nullable<decimal>(), new Nullable<decimal>())
+
+
+        let parseMP code (filter: LocationFilterMessage) = 
+            let codeWithoutDists, filter = parseDistricts code filter
+            let codeForMPParse, filter = parseLanes codeWithoutDists filter
+
+            let mat = Regex.Match(codeForMPParse, LocationPatterns.begMPPattern)
+            let startMP = mat.Groups.Item(LocationPatterns.MILEPOINT_GROUP_KEY).Value
+            match startMP with
+            | NumericString mp -> filter.BeginMilepoint <- new Nullable<decimal>(mp)
+            | StartsWith "z" -> filter.IsZMilepoint <- true
+                                filter.BeginMilepoint, filter.EndMilepoint <- parseZMP startMP
+
+            // TODO: lots more to go
+            filter
 
         // ===== Districts ==================================
         let handleDistricts allDistricts filter = filter
     
-        /// <summary>
-        /// Top-level parsing logic.  Defers parsing work based on rudimentary structure of the location code.
-        /// </summary>
-        /// <param name="code">The location code to parse</param>
+        // ===== Top-level logic=============================
         let parse code (filter: LocationFilterMessage) = 
             match code with
             | Contains "/" () -> parseXFeature code filter
@@ -137,9 +155,6 @@ module LocationCodeParser =
             | MatchesPattern LocationPatterns.begMPPattern mps -> parseMP mps filter
             | _ -> new LocationFilterMessage()
 
-        /// <summary>
-        /// Entry point to the function.
-        /// </summary>
         let filter = new LocationFilterMessage()
         match code with
         | Null code -> filter
