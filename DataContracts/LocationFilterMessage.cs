@@ -25,12 +25,10 @@ namespace DataContracts
         [DataMember]
         public string LocationCode { get; set; }
 
-        /// <summary>
-        /// Gets or sets a tuple representing the latitude and longitude respectively.
-        /// </summary>
         [DataMember]
         public decimal? Latitude { get; set; }
 
+        [DataMember]
         public decimal? Longitude { get; set; }
 
         [DataMember]

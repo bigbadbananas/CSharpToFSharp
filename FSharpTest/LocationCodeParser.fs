@@ -47,13 +47,13 @@ module LocationCodeParser =
         // Parses the district IDs out of the Location Code, placing them into
         // the filter.  Returns the mutated code and filter.
         let parseDistricts (code, (filter: LocationFilterMessage)) =
-            let mat = getGroup (Regex.Match(code, LocationPatterns.districtIdsPattern))
-            filter.DistrictIds <- (mat LocationPatterns.DISTRICT_IDS_KEY)
+            let groups = getGroup (Regex.Match(code, LocationPatterns.districtIdsPattern))
+            filter.DistrictIds <- (groups LocationPatterns.DISTRICT_IDS_KEY)
                                        .ToString()
                                        .Split(',')
                                        .Select(fun d -> d.Trim())
                                        .ToList()
-            (mat LocationPatterns.PREDECESSOR_GROUP_KEY, filter)
+            (groups LocationPatterns.PREDECESSOR_GROUP_KEY, filter)
 
         // Returns a location code with any lanes affected removed and
         // a mutated LocationFilterMessage with lanes assigned to it.
@@ -64,14 +64,14 @@ module LocationCodeParser =
                 Regex.Split(str.Trim(), LocationPatterns.lanesAffectedSingle)
                      .ToList()
             
-            let mat = getGroup (Regex.Match(code, LocationPatterns.lanesAffectedPattern))
-            (mat LocationPatterns.LANES_AFFECTED_KEY).Split(':')
+            let groups = getGroup (Regex.Match(code, LocationPatterns.lanesAffectedPattern))
+            (groups LocationPatterns.LANES_AFFECTED_KEY).Split(':')
             |> function
                 | [| one; two; |] -> filter.LanesAffectedLeft <- parseOneSideLanes one
                                      filter.LanesAffectedRight <- parseOneSideLanes two
                 | [| one; |] -> filter.LanesAffectedUnknown <- parseOneSideLanes one
                 | _ -> ()
-            (mat LocationPatterns.PREDECESSOR_GROUP_KEY, filter)
+            (groups LocationPatterns.PREDECESSOR_GROUP_KEY, filter)
             
         // ===== Highway/Route/Alias ========================
 
@@ -131,15 +131,14 @@ module LocationCodeParser =
             // the parse methods mutate the filter but I am pretending they don't
             // ...because.
             let newCode, filter = (parseDistricts >> parseLanes) (code, filter)
-            let m = (Regex.Match(newCode, LocationPatterns.begMPPattern))
+            let mat = (Regex.Match(newCode, LocationPatterns.begMPPattern))
             
-            if m.Success then
-                let startMP = getGroup m LocationPatterns.MILEPOINT_GROUP_KEY
-                if (startMP.StartsWith("z", StringComparison.OrdinalIgnoreCase))
-                    then filter.IsZMilepoint <- true
+            if mat.Success then
+                let startMP = getGroup mat LocationPatterns.MILEPOINT_GROUP_KEY
+                filter.IsZMilepoint <- startMP.StartsWith("z", StringComparison.OrdinalIgnoreCase)
 
                 parseMilePoints startMP filter
-                |> parseHighwayRoute (getGroup m LocationPatterns.SUCCESSOR_GROUP_KEY)
+                |> parseHighwayRoute (getGroup mat LocationPatterns.SUCCESSOR_GROUP_KEY)
             else filter
 
         // ===== Districts ==================================
@@ -149,7 +148,7 @@ module LocationCodeParser =
             else filter.DistrictIds <- [ "8"; "10"; "11"; ].ToList() // use some profile default in reality
             filter
     
-        // ===== Top-level logic=============================
+        // ===== Top-level logic =============================
 
         let parse code (filter: LocationFilterMessage) = 
             match code with
@@ -157,6 +156,8 @@ module LocationCodeParser =
             | StartsWith "=" () -> parseLatLng code filter
             | _ -> parseMilePointCode code filter
 
+        // ===== Entry point  ================================
+        // All null handling happens here.
         let filter = new LocationFilterMessage()
         match code with
         | Null -> filter
