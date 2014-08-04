@@ -2,6 +2,7 @@
 
 module LocationCodeParser = 
     open System
+    open System.Globalization
     open System.Linq
     open System.Text.RegularExpressions
     open Interop
@@ -41,7 +42,7 @@ module LocationCodeParser =
         let (|NumericString|_|) string =
             let didParse, value = Decimal.TryParse(string)
             if didParse then Some(value) else None
-            
+
         // ===== Lanes and Districts ========================
 
         // Parses the district IDs out of the Location Code, placing them into
@@ -58,8 +59,6 @@ module LocationCodeParser =
         // Returns a location code with any lanes affected removed and
         // a mutated LocationFilterMessage with lanes assigned to it.
         let parseLanes (code, (filter: LocationFilterMessage)) =
-            // Uses a single string representing a list of lanes
-            // to make a list of lane designation strings.
             let parseOneSideLanes (str: string) =
                 Regex.Split(str.Trim(), LocationPatterns.lanesAffectedSingle)
                      .ToList()
@@ -143,9 +142,10 @@ module LocationCodeParser =
 
         // ===== Districts ==================================
 
-        let handleDistricts allDistricts (filter: LocationFilterMessage) =
-            if allDistricts then filter.DistrictIds <- [].ToList() // empty district list means no filtering
-            else filter.DistrictIds <- [ "8"; "10"; "11"; ].ToList() // use some profile default in reality
+        // TODO: Use User Profile to get DistrictIds, not a hard-coded list
+        let handleDistricts (allDistricts: bool) (code: string) (filter: LocationFilterMessage) =
+            if not allDistricts && not (Regex.IsMatch(code, LocationPatterns.DISTRICT_IDS_KEY))
+            then filter.DistrictIds <- [ "8"; "10"; "11"; ].ToList()
             filter
     
         // ===== Top-level logic =============================
@@ -157,9 +157,12 @@ module LocationCodeParser =
             | _ -> parseMilePointCode code filter
 
         // ===== Entry point  ================================
+
         // All null handling happens here.
         let filter = new LocationFilterMessage()
-        match code with
-        | Null -> filter
-        | _ -> parse (code.Trim()) filter
-               |> handleDistricts allDistricts
+        let filter = match code with
+                     | Null -> filter
+                     | _ -> parse (code.Trim()) filter
+                             |> handleDistricts allDistricts code
+        filter.LandmarkName <- code
+        filter
