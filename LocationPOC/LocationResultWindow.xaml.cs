@@ -33,32 +33,21 @@ namespace LocationPOC
             Type filterType = filter.GetType();
             var props = filterType.GetProperties().Where(p => p.GetValue(filter, null) != null);
 
-            IEnumerable<string> data = props.Select(p => string.Format("{0}: {1}", p.Name, GetStringGayAsBalls(p.GetValue(filter))));
+            IEnumerable<string> data = props.Select(p => string.Format("{0}: {1}", p.Name, GetAsString(p.GetValue(filter))));
             
             this.ResultsText.Text = string.Join("\n\r", data);
         }
 
 
-        private static string GetStringGayAsBalls<T>(T obj)
+        private static string GetAsString<T>(T obj)
         {
+            // strings are IEnumerables, so hooray!
             if (obj is IEnumerable<T> && !(obj is string))
             {
                 return string.Join(",", obj as IEnumerable<T>);
             }
 
             return obj.ToString();
-        }
-
-
-        private static string GetStringOther<T>(IEnumerable<T> obj)
-        {
-            if (obj is string)
-            {
-                return obj.ToString();
-            }
-
-            return string.Join(",", obj);
-            
         }
     }
 }
