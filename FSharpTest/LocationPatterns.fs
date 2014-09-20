@@ -1,4 +1,4 @@
-﻿namespace LocationCodeParser.LocationPatterns
+﻿namespace LocationPatterns
 
 /// <summary>
 /// Contains Regex patterns used for parsing location codes.

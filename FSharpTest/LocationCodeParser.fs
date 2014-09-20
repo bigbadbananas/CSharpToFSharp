@@ -7,13 +7,13 @@ module LocationCodeParser =
     open System.Text.RegularExpressions
     open Interop
     open DataContracts
-    open LocationCodeParser.LocationPatterns
+    open LocationPatterns
     
     /// <summary>
     /// Entry point to the parser.  Ensures a non-null location code is what goes through parsing.
     /// </summary>
     /// <param name="code">The location code to parse</param>
-    let parseLocationCode (code: string) (allDistricts: bool) = 
+    let ParseLocationCode (code: string) (allDistricts: bool) = 
 
         // ===== Utils ============================ 
 
@@ -54,7 +54,8 @@ module LocationCodeParser =
                                        .Split(',')
                                        .Select(fun d -> d.Trim())
                                        .ToList()
-            (groups LocationPatterns.PREDECESSOR_GROUP_KEY, filter)
+            let newCode = Regex.Replace(code, groups LocationPatterns.DISTRICT_IDS_KEY, "")
+            (newCode, filter)
 
         // Returns a location code with any lanes affected removed and
         // a mutated LocationFilterMessage with lanes assigned to it.
@@ -70,7 +71,9 @@ module LocationCodeParser =
                                      filter.LanesAffectedRight <- parseOneSideLanes two
                 | [| one; |] -> filter.LanesAffectedUnknown <- parseOneSideLanes one
                 | _ -> ()
-            (groups LocationPatterns.PREDECESSOR_GROUP_KEY, filter)
+            
+            let newCode = Regex.Replace(code, groups LocationPatterns.LANES_AFFECTED_KEY, "")
+            (newCode, filter)
             
         // ===== Highway/Route/Alias ========================
 
@@ -144,7 +147,7 @@ module LocationCodeParser =
 
         // TODO: Use User Profile to get DistrictIds, not a hard-coded list
         let handleDistricts (allDistricts: bool) (code: string) (filter: LocationFilterMessage) =
-            if not allDistricts && not (Regex.IsMatch(code, LocationPatterns.DISTRICT_IDS_KEY))
+            if not allDistricts && filter.DistrictIds.Count = 0 && not (Regex.IsMatch(code, LocationPatterns.DISTRICT_IDS_KEY))
             then filter.DistrictIds <- [ "8"; "10"; "11"; ].ToList()
             filter
     

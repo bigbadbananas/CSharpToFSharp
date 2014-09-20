@@ -15,7 +15,7 @@ type UnitTest() =
         let lat = new Nullable<decimal>(12m)
         let lng = new Nullable<decimal>(15m)
         let expected = new LocationFilterMessage(Latitude = lat, Longitude = lng)
-        let actual = parseLocationCode code false
+        let actual = ParseLocationCode code false
         Assert.AreEqual(expected.Latitude, actual.Latitude)
         Assert.AreEqual(expected.Longitude, actual.Longitude)
 
@@ -26,7 +26,7 @@ type UnitTest() =
         let lat = new Nullable<decimal>(12m)
         let lng = new Nullable<decimal>(15m)
         let expected = new LocationFilterMessage(Latitude = lat, Longitude = lng)
-        let actual = parseLocationCode code false
+        let actual = ParseLocationCode code false
         Assert.AreNotEqual(expected.Latitude, actual.Latitude)
         Assert.AreEqual(expected.Longitude, actual.Longitude)
 
@@ -36,7 +36,7 @@ type UnitTest() =
         let lat = new Nullable<decimal>(12m)
         let lng = new Nullable<decimal>(15m)
         let expected = new LocationFilterMessage(Latitude = lat, Longitude = lng)
-        let actual = parseLocationCode code false
+        let actual = ParseLocationCode code false
         Assert.AreEqual(expected.Latitude, actual.Latitude)
         Assert.AreNotEqual(expected.Longitude, actual.Longitude)
 
@@ -45,41 +45,43 @@ type UnitTest() =
     member x.parseLeftSideHappyHighwayNumberTest () = 
         let code = "H205/"
         let expected = new LocationFilterMessage(HighwayNumber = "H205")
-        let actual = parseLocationCode code false
+        let actual = ParseLocationCode code false
         Assert.AreEqual(expected.HighwayNumber, actual.HighwayNumber)
 
     [<TestMethod>]
     member x.parseLeftSideHappyRouteNumberTest1 () = 
         let str = "I-5/"
         let expected = new LocationFilterMessage(RouteNumber = "I-5")
-        let actual = parseLocationCode str false
+        let actual = ParseLocationCode str false
         Assert.AreEqual(expected.RouteNumber, actual.RouteNumber)
 
     [<TestMethod>]
     member x.parseLeftSideHappyRouteNumberTest2 () = 
         let str = "OR-20/"
         let expected = new LocationFilterMessage(RouteNumber = "OR-20")
-        let actual = parseLocationCode str false
+        let actual = ParseLocationCode str false
         Assert.AreEqual(expected.RouteNumber, actual.RouteNumber)
 
     [<TestMethod>]
     member x.parseLeftSideHappyHighwayNumberTest3 () = 
         let str = "US-205/"
         let expected = new LocationFilterMessage(RouteNumber = "US-205")
-        let actual = parseLocationCode str false
+        let actual = ParseLocationCode str false
         Assert.AreEqual(expected.RouteNumber, actual.RouteNumber)
 
     [<TestMethod>]
     member x.parseLeftSideNoMatchTest () = 
         let str = "bananas!/"
         let expected = new LocationFilterMessage(Alias = "bananas!")
-        let actual = parseLocationCode str false
+        let actual = ParseLocationCode str false
         Assert.AreEqual(expected.Alias, actual.Alias)
 
-//    [<TestMethod>]
-//    member x.parseRightSideHappyTest () = 
-//        let str = "/NB"
-//        let filter = new LocationFilterMessage()
-//        let expected = new LocationFilterMessage(RoadDirectionCode = "NB")
-//        let actual = parseLocationCode str false
-//        Assert.AreEqual(expected.RoadDirectionCode, actual.RoadDirectionCode)
+    // ===== Milepoint ===================================
+    [<TestMethod>]
+    member x.parse20i5 () = 
+        let str = "20 i5 -sw"
+        let expected = new LocationFilterMessage(RouteNumber = "I-5", 
+                                                 BeginMilepoint = new Nullable<decimal>(20m), 
+                                                 HighwayNumber = "PACIFIC")
+        let actual = ParseLocationCode str false
+        Assert.AreEqual(expected, actual)

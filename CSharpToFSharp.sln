@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpToFSharp", "CSharpToFSharp\CSharpToFSharp.csproj", "{E0A3C8F2-245D-44E7-9D9A-B8C4C34A3DE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicInteropPOC", "CSharpToFSharp\BasicInteropPOC.csproj", "{E0A3C8F2-245D-44E7-9D9A-B8C4C34A3DE2}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpLib", "FSharpTest\FSharpLib.fsproj", "{0464158B-98B9-4667-9BC6-B2B881E852CD}"
 EndProject
@@ -15,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataContracts", "DataContracts\DataContracts.csproj", "{21ECA724-DA65-422B-B780-BA42132BA647}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsUnitTests", "FsUnitTests\FsUnitTests.fsproj", "{AA28E5EA-0821-41D5-91C2-EFEFDC3503FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocationPOC", "LocationPOC\LocationPOC.csproj", "{E93C1DBF-2EF8-494B-84A5-94ADCF373598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{AA28E5EA-0821-41D5-91C2-EFEFDC3503FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA28E5EA-0821-41D5-91C2-EFEFDC3503FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA28E5EA-0821-41D5-91C2-EFEFDC3503FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E93C1DBF-2EF8-494B-84A5-94ADCF373598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E93C1DBF-2EF8-494B-84A5-94ADCF373598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E93C1DBF-2EF8-494B-84A5-94ADCF373598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E93C1DBF-2EF8-494B-84A5-94ADCF373598}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
