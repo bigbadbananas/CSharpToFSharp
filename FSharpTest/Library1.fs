@@ -1,15 +1,10 @@
 ﻿namespace ClientUtils.FsharpLib
 
 module SomeMath = 
-    
-    /// <summary>
-    /// Naive factorial.
-    /// </summary>
-    let rec factorial1 n =
-        match n with
-        | 0 | 1 -> 1
-        | _ -> n * factorial1 (n - 1)
 
+	let add x y = 
+		x + y
+		
     /// <summary>
     /// Factorial with single-threaded tail-recursion.
     /// </summary>
@@ -31,6 +26,16 @@ module SomeMath =
     /// </summary>
     let factorial4 n = 
         [1..n] |> List.reduce (*)
+		
+	let StdDev items = 
+		let mean items = List.sum(items) / items.Length
+		
+		let innerFunc item = (item - mean) * (item - mean)
+		
+		let stdDev = 
+			List.sumBy(fun x -> innerFunc x) 
+			|> float 
+			|> System.Math.Sqrt
 
 
 module Parser = 
